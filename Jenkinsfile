@@ -20,11 +20,11 @@ pipeline {
             steps {
                 sh '''
                     flake8 src > flake8-report.txt || true
-                    bandit -r src -f txt -o bandit-report.txt || true
+                    bandit -r src -f custom -o bandit-report.out --msg-template "{abspath}:{line}: [{test_id}] {msg}" || true
                 '''
                 recordIssues tools: [
                     flake8(pattern: 'flake8-report.txt'),
-                    pyLint(name: 'Bandit', pattern: 'bandit-report.txt')
+                    pyLint(name: 'Bandit', pattern: 'bandit-report.out')
                 ]
             }
         }
@@ -57,12 +57,9 @@ pipeline {
                 expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
             }
             steps {
-                echo 'Mergeando develop → master...'
                 sh '''
-                    git config user.name "jenkins"
-                    git config user.email "jenkins@localhost"
                     git fetch origin
-                    git checkout master
+                    git checkout master || git checkout -b master origin/master
                     git merge origin/develop
                     git push origin master
                 '''
