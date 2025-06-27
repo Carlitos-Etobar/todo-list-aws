@@ -1,12 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        AWS_REGION = 'us-east-1'
-        STACK_NAME = 'todo-app-staging'
-        S3_BUCKET = 'aws-sam-cli-managed-default-samclisourcebucket-mgenxqjrm4fs'
-    }
-
     stages {
         stage('Get Code') {
             steps {
@@ -32,7 +26,7 @@ pipeline {
             steps {
                 sh '''
                     sam build
-                    sam deploy --stack-name $STACK_NAME --s3-bucket $S3_BUCKET --region $AWS_REGION --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
+                    sam deploy --stack-name todo-app-staging --s3-bucket aws-sam-cli-managed-default-samclisourcebucket-mgenxqjrm4fs --region us-east-1 --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
                 '''
             }
         }
@@ -40,7 +34,7 @@ pipeline {
         stage('Rest Test') {
             steps {
                 sh '''
-                    export BASE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
+                    export BASE_URL=$(aws cloudformation describe-stacks --stack-name todo-app-staging --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
                     python3 -m pytest test/integration/todoApiTest.py || exit 1
                 '''
             }
