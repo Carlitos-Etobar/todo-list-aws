@@ -39,14 +39,11 @@ pipeline {
 
         stage('Rest Test') {
             steps {
-                echo 'Ejecutando pruebas de integración con pytest...'
                 sh '''
                     export API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
                     echo "Probando la API en: $API_URL"
-
-                    # Se asume que el test usa API_URL desde una variable de entorno
                     export API_URL
-                    pytest test/integration/todoApiTest.py || exit 1
+                    python3 -m pytest test/integration/todoApiTest.py || exit 1
                 '''
             }
         }
