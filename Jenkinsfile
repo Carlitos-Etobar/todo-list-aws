@@ -41,7 +41,6 @@ pipeline {
             steps {
                 sh '''
                     export API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
-                    echo "Probando la API en: $API_URL"
                     export API_URL
                     python3 -m pytest test/integration/todoApiTest.py || exit 1
                 '''
