@@ -5,7 +5,6 @@ pipeline {
         AWS_REGION = 'us-east-1'
         STACK_NAME = 'todo-app-staging'
         S3_BUCKET = 'aws-sam-cli-managed-default-samclisourcebucket-mgenxqjrm4fs'
-        SAM_TEMPLATE = 'template.yaml'
     }
 
     stages {
@@ -33,7 +32,7 @@ pipeline {
             steps {
                 sh '''
                     sam build
-                    sam deploy --stack-name $STACK_NAME --s3-bucket $S3_BUCKET --region $AWS_REGION --capabilities CAPABILITY_IAM
+                    sam deploy --stack-name $STACK_NAME --s3-bucket $S3_BUCKET --region $AWS_REGION --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset
                 '''
             }
         }
