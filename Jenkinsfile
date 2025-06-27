@@ -40,8 +40,7 @@ pipeline {
         stage('Rest Test') {
             steps {
                 sh '''
-                    export API_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
-                    export API_URL
+                    export BASE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='ApiUrl'].OutputValue" --output text)
                     python3 -m pytest test/integration/todoApiTest.py || exit 1
                 '''
             }
