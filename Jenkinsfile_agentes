@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent none
 
     environment {
         AWS_REGION = 'us-east-1'
@@ -9,15 +9,24 @@ pipeline {
 
     stages {
         stage('Get Code') {
+            agent { label 'agente1' }
             steps {
+                sh '''
+                    whoami
+                    hostname
+                '''
                 cleanWs()
                 git branch: 'develop', url: 'https://github.com/Carlitos-Etobar/todo-list-aws.git'
             }
         }
 
         stage('Static Test') {
+            agent { label 'agente1' }
             steps {
                 sh '''
+                    whoami
+                    hostname
+
                     flake8 src > flake8-report.txt || true
                     bandit -r src -f custom -o bandit-report.out --msg-template "{abspath}:{line}: [{test_id}] {msg}" || true
                 '''
@@ -29,8 +38,12 @@ pipeline {
         }
 
         stage('Deploy') {
+            agent { label 'agente2' }
             steps {
                 sh '''
+                    whoami
+                    hostname
+
                     sam build
                     sam deploy --stack-name $STACK_NAME --s3-bucket $S3_BUCKET --region $AWS_REGION --capabilities CAPABILITY_IAM --no-fail-on-empty-changeset --parameter-overrides Stage=staging
                 '''
@@ -38,8 +51,12 @@ pipeline {
         }
 
         stage('Rest Test') {
+            agent { label 'agente2' }
             steps {
                 sh '''
+                    whoami
+                    hostname
+
                     export BASE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='BaseUrlApi'].OutputValue" --output text)
                     python3 -m pytest -k "get or list" test/integration/todoApiTest.py || exit 1
                 '''
@@ -50,8 +67,12 @@ pipeline {
             when {
                 expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
             }
+            agent any
             steps {
                 sh '''
+                    whoami
+                    hostname
+
                     git fetch origin
                     git checkout master || git checkout -b master origin/master
 
@@ -60,12 +81,12 @@ pipeline {
                     git reset HEAD Jenkinsfile
                     git restore --staged Jenkinsfile
                     git restore Jenkinsfile
-
+                    
                     git reset HEAD Jenkinsfile_agentes
                     git restore --staged Jenkinsfile_agentes
                     git restore Jenkinsfile_agentes
 
-                    git commit -m "merge develop into master"
+                    git commit -m "merge develop agentes into master agentes"
                     git push origin master
                 '''
             }
