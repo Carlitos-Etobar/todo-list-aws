@@ -60,6 +60,7 @@ pipeline {
                     git restore --staged Jenkinsfile
                     git restore Jenkinsfile
 
+                    git commit -m "merge develop into master"
                     git push origin master
                 '''
             }
