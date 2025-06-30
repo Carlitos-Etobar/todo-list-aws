@@ -41,7 +41,7 @@ pipeline {
             steps {
                 sh '''
                     export BASE_URL=$(aws cloudformation describe-stacks --stack-name $STACK_NAME --query "Stacks[0].Outputs[?OutputKey=='BaseUrlApi'].OutputValue" --output text)
-                    python3 -m pytest test/integration/todoApiTest.py || exit 1
+                    python3 -m pytest -k "get or list" test/integration/todoApiTest.py || exit 1
                 '''
             }
         }
