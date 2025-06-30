@@ -54,7 +54,12 @@ pipeline {
                 sh '''
                     git fetch origin
                     git checkout master || git checkout -b master origin/master
-                    git merge origin/develop
+
+                    git checkout origin/develop -- .
+                    git reset HEAD Jenkinsfile
+                    git restore --staged Jenkinsfile
+                    git restore Jenkinsfile
+
                     git push origin master
                 '''
             }
