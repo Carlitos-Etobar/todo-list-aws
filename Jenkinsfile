@@ -74,10 +74,6 @@ pipeline {
 
                     git checkout origin/develop -- .
 
-                    git reset HEAD Jenkinsfile
-                    git restore --staged Jenkinsfile
-                    git restore Jenkinsfile
-
                     git reset HEAD Jenkinsfile_agentes
                     git restore --staged Jenkinsfile_agentes
                     git restore Jenkinsfile_agentes
