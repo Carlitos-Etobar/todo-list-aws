@@ -55,6 +55,7 @@ pipeline {
                 sh '''
                     git fetch origin
                     git checkout master || git checkout -b master origin/master
+                    git pull origin master --rebase
 
                     git checkout origin/develop -- .
 
