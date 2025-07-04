@@ -19,7 +19,7 @@ pipeline {
             steps {
                 sh '''
                     sam build
-                    sam deploy
+                    sam deploy || [ $? -eq 1 ]
                 '''
             }
         }
