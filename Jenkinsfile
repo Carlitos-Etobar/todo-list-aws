@@ -5,18 +5,28 @@ pipeline {
         stage('Get Code') {
             steps {
                 cleanWs()
-                git branch: 'develop', url: 'https://github.com/Carlitos-Etobar/todo-list-aws.git'
+                script {
+                    def branch = env.GIT_BRANCH?.replaceFirst(/^origin\//, '')
+                    git branch: branch, url: 'https://github.com/Carlitos-Etobar/todo-list-aws.git'
 
-                sh '''
-                    rm -f samconfig.toml
-                    git clone --branch staging https://github.com/Carlitos-Etobar/todo-list-aws-config.git config-repo
-                    cp config-repo/samconfig.toml .
-                    rm -rf config-repo
-                '''
+                    sh '''
+                        rm -f samconfig.toml
+                        if [ "${GIT_BRANCH}" = "origin/master" ]; then
+                            git clone --branch production https://github.com/Carlitos-Etobar/todo-list-aws-config.git config-repo
+                        else
+                            git clone --branch staging https://github.com/Carlitos-Etobar/todo-list-aws-config.git config-repo
+                        fi
+                        cp config-repo/samconfig.toml .
+                        rm -rf config-repo
+                    '''
+                }
             }
         }
 
         stage('Static Test') {
+            when {
+                branch 'develop'
+            }
             steps {
                 sh '''
                     flake8 src > flake8-report.txt || true
@@ -50,7 +60,10 @@ pipeline {
 
         stage('Promote') {
             when {
-                expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+                allOf {
+                    branch 'develop'
+                    expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
+                }
             }
             steps {
                 sh '''
