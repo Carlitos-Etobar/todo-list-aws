@@ -25,7 +25,7 @@ pipeline {
 
         stage('Static Test') {
             when {
-                branch 'develop'
+                expression { env.BRANCH_NAME == 'develop' }
             }
             steps {
                 sh '''
@@ -61,7 +61,7 @@ pipeline {
         stage('Promote') {
             when {
                 allOf {
-                    branch 'develop'
+                    expression { env.BRANCH_NAME == 'develop' }
                     expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
                 }
             }
