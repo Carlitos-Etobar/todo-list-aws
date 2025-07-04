@@ -17,6 +17,7 @@ pipeline {
                 '''
                 cleanWs()
                 git branch: 'develop', url: 'https://github.com/Carlitos-Etobar/todo-list-aws.git'
+                stash includes: '**', name: 'source-code'
             }
         }
 
@@ -69,6 +70,7 @@ pipeline {
             }
             agent any
             steps {
+                unstash 'source-code'
                 sh '''
                     whoami
                     hostname
