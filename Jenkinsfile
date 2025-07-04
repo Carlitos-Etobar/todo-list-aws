@@ -8,7 +8,7 @@ pipeline {
                 git branch: 'master', url: 'https://github.com/Carlitos-Etobar/todo-list-aws.git'
 
                 sh '''
-                    git clone --branch production --depth 1 https://github.com/Carlitos-Etobar/todo-list-aws-config.git config-repo
+                    git clone --branch production https://github.com/Carlitos-Etobar/todo-list-aws-config.git config-repo
                     cp config-repo/samconfig.toml .
                     rm -rf config-repo
                 '''
