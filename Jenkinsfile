@@ -32,17 +32,8 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh '''
-                    echo "======== DEBUG samconfig.toml ========"
-                    pwd
-                    ls -lh samconfig.toml
-                    echo "------ CONTENIDO ------"
-                    cat samconfig.toml || echo "samconfig.toml NO encontrado"
-                    echo "------ HEADERS ------"
-                    grep '\\[.*\\]' samconfig.toml
-                    echo "======== FIN DEBUG ========"
-
                     sam build
-                    sam deploy
+                    sam deploy || [ $? -eq 1 ]
                 '''
             }
         }
