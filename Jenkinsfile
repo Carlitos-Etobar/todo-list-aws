@@ -11,7 +11,7 @@ pipeline {
 
                     sh '''
                         rm -f samconfig.toml
-                        if [ "${GIT_BRANCH}" = "origin/master" ]; then
+                        if [[ "${GIT_BRANCH}" == "origin/master" ]]; then
                             git clone --branch production https://github.com/Carlitos-Etobar/todo-list-aws-config.git config-repo
                         else
                             git clone --branch staging https://github.com/Carlitos-Etobar/todo-list-aws-config.git config-repo
@@ -25,7 +25,7 @@ pipeline {
 
         stage('Static Test') {
             when {
-                expression { env.BRANCH_NAME == 'develop' }
+                expression { env.GIT_BRANCH?.contains('develop') }
             }
             steps {
                 sh '''
@@ -61,7 +61,7 @@ pipeline {
         stage('Promote') {
             when {
                 allOf {
-                    expression { env.BRANCH_NAME == 'develop' }
+                    expression { env.GIT_BRANCH?.contains('develop') }
                     expression { currentBuild.result == null || currentBuild.result == 'SUCCESS' }
                 }
             }
